@@ -2,15 +2,24 @@
 name = "HyperlaneLibrary"
 version = "1.0.0"
 authors = []
+edition = "2024.beta"
 
 [addresses]
 hp_library = "_"
 
 [dev-addresses]
+hp_library = "0x1234"
 
-[dependencies.AptosFramework]
-git = "https://github.com/aptos-labs/aptos-core.git"
+
+#[dependencies.AptosFramework]
+#git = "https://github.com/aptos-labs/aptos-core.git"
+#rev = "mainnet"
+#subdir = "aptos-move/framework/aptos-framework"
+
+[dependencies.Sui]
+git = "https://github.com/MystenLabs/sui.git"
 rev = "mainnet"
-subdir = "aptos-move/framework/aptos-framework"
+subdir = "crates/sui-framework/packages/sui-framework"
+
 
 [dev-dependencies]

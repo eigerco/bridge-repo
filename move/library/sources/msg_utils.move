@@ -5,7 +5,7 @@ module hp_library::msg_utils {
   use std::vector;
 
   use aptos_std::from_bcs;
-  use aptos_std::aptos_hash;
+  use sui::hash;
 
   use hp_library::utils::{ extract_from_bytes, extract_from_bytes_reversed };
   
@@ -36,7 +36,7 @@ module hp_library::msg_utils {
   }
 
   public fun id(msg: &vector<u8>): vector<u8> {
-    aptos_hash::keccak256(*msg)
+    hash::keccak256(*msg)
   }
 
   public fun version(bytes: &vector<u8>): u8 {

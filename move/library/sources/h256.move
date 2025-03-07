@@ -11,7 +11,7 @@ module hp_library::h256 {
   const ZERO_32_BYTES: vector<u8> = vector[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
   /// 32-byte resource
-  struct H256 has store, drop {
+  public struct H256 has store, drop {
     inner: vector<u8>
   }
 
