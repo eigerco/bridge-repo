@@ -1,5 +1,4 @@
 module hp_library::merkle_tree {
-  use std::vector;
 
   use hp_library::utils::{Self, hash_concat};
   //
@@ -17,7 +16,7 @@ module hp_library::merkle_tree {
   //
   //  Resources
   //
-  struct MerkleTree has store, drop, copy {
+  public struct MerkleTree has store, drop, copy {
     branch: vector<vector<u8>>,
     count: u64
   }

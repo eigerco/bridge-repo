@@ -1,11 +1,12 @@
 module hp_library::token_msg_utils {
 
     use std::bcs;
-    use std::vector;
+    use hp_library::hacks;
 
-    use aptos_std::from_bcs;
-
-    use hp_library::utils::{ extract_from_bytes, extract_from_bytes_reversed };
+    use hp_library::utils::{
+        extract_from_bytes,
+        extract_from_bytes_reversed
+    };
     use hp_library::h256::{Self, H256};
 
     /// Convert message data into bytes
@@ -20,19 +21,23 @@ module hp_library::token_msg_utils {
         let amount_bytes = bcs::to_bytes<u256>(&amount);
         vector::reverse(&mut amount_bytes);
 
-        vector::append(&mut result, h256::to_bytes(&recipient));
+        vector::append(
+            &mut result,
+            h256::to_bytes(&recipient)
+        );
         vector::append(&mut result, amount_bytes);
         vector::append(&mut result, metadata);
         result
     }
 
-
     public fun recipient(bytes: &vector<u8>): address {
-        from_bcs::to_address(extract_from_bytes(bytes, 0, 32))
+        hacks::to_address(extract_from_bytes(bytes, 0, 32))
     }
 
     public fun amount(bytes: &vector<u8>): u256 {
-        from_bcs::to_u256(extract_from_bytes_reversed(bytes, 32, 64))
+        hacks::to_u256(
+            extract_from_bytes_reversed(bytes, 32, 64)
+        )
     }
 
     public fun token_id(bytes: &vector<u8>): u256 {
@@ -43,9 +48,6 @@ module hp_library::token_msg_utils {
         extract_from_bytes(bytes, 39, 0)
     }
 }
-
-
-
 // 6-18
 //
 // ETH chain
@@ -62,8 +64,6 @@ module hp_library::token_msg_utils {
 //     amount
 //     check (amount % 10 * abs(source-dest) == 0)
 //     data_amount = amount / (10 * abs(source-dest))
-
-
 
 // SUPRA chain
 // WETH (8)

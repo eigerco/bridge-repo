@@ -1,6 +1,5 @@
 module hp_library::h256 {
   
-  use std::vector;
   use hp_library::utils;
 
   // Error

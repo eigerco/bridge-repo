@@ -1,7 +1,5 @@
 module hp_library::utils {
-    use std::vector;
     use sui::bcs;
-    use std::option::{Self, Option};
     use std::string;
     //use aptos_std::string_utils;
     use sui::hash;
@@ -225,7 +223,7 @@ module hp_library::utils {
     fun ethereum_address_from_pubkey(pubkey: &ECDSARawPublicKey): vector<u8> {
         let pubkey_bytes: vector<u8> = secp256k1::ecdsa_raw_public_key_to_bytes(pubkey);
         extract_from_bytes(
-            &aptos_hash::keccak256(pubkey_bytes),
+            &hash::keccak256(pubkey_bytes),
             12,
             0
         )
