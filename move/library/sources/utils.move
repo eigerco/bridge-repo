@@ -3,10 +3,10 @@ module hp_library::utils {
     use std::string;
     //use aptos_std::string_utils;
     use sui::hash;
-    use sui::ecdsa_k1::{
+    use hp_library::hacks::{
         Self,
-        ECDSASignature,
-        ECDSARawPublicKey
+        ECDSARawPublicKey,
+        ECDSASignature
     };
 
     /// Aptos Module Version
@@ -167,7 +167,7 @@ module hp_library::utils {
         vector::append(
             &mut result,
             string::into_bytes(
-                concat(
+                hacks::concat(
                     b"\x19Ethereum Signed Message:\n{}",
                     message_len
                 )
@@ -178,11 +178,9 @@ module hp_library::utils {
     }
 
     /// Extract `signature` and `recovery_id` from `singature_bytes`
-    public fun signature_and_recovery_id(bytes: &vector<u8>): (ECDSASignature, u8) {
+    fun signature_and_recovery_id(bytes: &vector<u8>): (ECDSASignature, u8) {
         // get signature
-        let signature = secp256k1::ecdsa_signature_from_bytes(
-            extract_from_bytes(bytes, 0, 64)
-        );
+        let signature = hacks::signature_from_bytes(extract_from_bytes(bytes, 0, 64));
 
         // get recovery id
         let recovery_id = *vector::borrow(bytes, 64);
@@ -204,42 +202,26 @@ module hp_library::utils {
         signature_bytes: &vector<u8>
     ): Option<vector<u8>> {
         let (signature, recovery_id) = signature_and_recovery_id(signature_bytes);
-        let public_key: Option<ECDSARawPublicKey> = secp256k1::ecdsa_recover(
-            *digest_bytes,
+        let public_key: ECDSARawPublicKey = hacks::ecdsa_recover(
+            digest_bytes,
+            signature,
             recovery_id,
-            &signature
         );
 
-        if (option::is_some(&public_key)) {
-            option::some(
-                ethereum_address_from_pubkey(option::borrow(&public_key))
-            )
-        } else {
-            option::none()
-        }
+        option::some(
+            ethereum_address_from_pubkey(public_key)
+        )
+
     }
 
     // extract ethereum address from pubkey
-    fun ethereum_address_from_pubkey(pubkey: &ECDSARawPublicKey): vector<u8> {
-        let pubkey_bytes: vector<u8> = secp256k1::ecdsa_raw_public_key_to_bytes(pubkey);
+    fun ethereum_address_from_pubkey(pubkey: ECDSARawPublicKey): vector<u8> {
+        let pubkey_bytes: vector<u8> = hacks::pub_key_to_bytes(pubkey);
         extract_from_bytes(
-            &hash::keccak256(pubkey_bytes),
+            &hash::keccak256(&pubkey_bytes),
             12,
             0
         )
-    }
-
-    // *** hacks for SUI ***
-
-    // replacement of aptos string_utils::format1(...)
-    // &string_utils::format1(&b"\x19Ethereum Signed Message:\n{}", message_len))
-    fun concat(prefix: vector<u8>, message_len: u64): string::String {
-        let res = string::utf8(prefix);
-        string::append(
-            &mut res,
-            std::macros::num_to_string !(message_len)
-        );
-        res
     }
 
     #[test]
